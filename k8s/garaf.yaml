@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: p248748monitor
+spec:
+  interval: 1h
+  releaseName: grafana
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  chart:
+    spec:
+      chart: grafana
+      version: 8.0.13  # You can pin to the latest stable
+      interval: 6h
+      sourceRef:
+        kind: HelmRepository
+        name: acr-oci-helm
+  values:
+    image:
+      repository: acr04317dvsuc01.azurecr.io/grafana/grafana
+      tag: 11.5.2
+    service:
+      type: NodePort
+    adminPassword: admin
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            access: proxy
+            url: http://prometheus:9090
+            isDefault: true
+    persistence:
+      enabled: true
+      size: 5Gi
+    crd:
+      create: true
