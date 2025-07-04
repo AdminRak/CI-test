@@ -1,0 +1,34 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: tomcat-app
+  namespace: default
+spec:
+  provider: kubernetes
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: tomcat-app
+  service:
+    port: 8080
+    targetPort: 8080
+  analysis:
+    interval: 1m
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+    - name: request-success-rate
+      interval: 1m
+      thresholdRange:
+        min: 99
+      templateRef:
+        name: success-rate
+        namespace: default
+    - name: request-duration
+      interval: 30s
+      thresholdRange:
+        max: 500
+      templateRef:
+        name: duration
+        namespace: default
