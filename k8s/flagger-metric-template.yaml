@@ -1,0 +1,27 @@
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: success-rate
+  namespace: default
+spec:
+  provider:
+    type: prometheus
+    address: http://prometheus-operated.default.svc:9090
+  query: |
+    100 * (sum(rate(http_requests_total{job="tomcat-app",status!~"5.."}[1m]))
+    /
+    sum(rate(http_requests_total{job="tomcat-app"}[1m])))
+---
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: duration
+  namespace: default
+spec:
+  provider:
+    type: prometheus
+    address: http://prometheus-operated.default.svc:9090
+  query: |
+    histogram_quantile(0.99,
+      sum(rate(http_request_duration_seconds_bucket{job="tomcat-app"}[1m]))
+      by (le))
