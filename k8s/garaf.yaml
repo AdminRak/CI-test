@@ -20,7 +20,7 @@ spec:
         name: acr-oci-helm
   values:
     image:
-      repository: acr04317dvsuc01.azurecr.io/grafana/grafana
+      repository: ACRNAME.azurecr.io/grafana/grafana
       tag: 11.5.2
     service:
       type: NodePort
